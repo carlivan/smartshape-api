@@ -19,8 +19,24 @@ public class PersonalController {
         return personalService.listarTodos();
     }
 
+    @GetMapping("/{id}")
+    public Personal listarPorId(@PathVariable Long id){
+        return personalService.listarPorId(id);
+    }
+
     @PostMapping
     public Personal criar(@RequestBody Personal personal){
         return personalService.salvar(personal);
     }
+
+    @PutMapping
+    public Personal atualizar(@RequestBody Personal personal){
+        return personalService.atualizar(personal);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deletar(@PathVariable Long id){
+        return personalService.deletar(id);
+    }
+
 }
