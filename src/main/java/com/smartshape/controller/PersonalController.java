@@ -47,6 +47,7 @@ public class PersonalController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id){
+        personalService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
