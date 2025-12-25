@@ -3,8 +3,11 @@ package com.smartshape.controller;
 import com.smartshape.model.Personal;
 import com.smartshape.service.PersonalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -15,28 +18,36 @@ public class PersonalController {
     private PersonalService personalService;
 
     @GetMapping
-    public List<Personal> listar(){
-        return personalService.listarTodos();
+    public ResponseEntity<List<Personal>> listar(){
+        return ResponseEntity.ok(personalService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public Personal listarPorId(@PathVariable Long id){
-        return personalService.listarPorId(id);
+    public ResponseEntity<Personal> listarPorId(@PathVariable Long id){
+        return ResponseEntity.ok(personalService.listarPorId(id));
     }
 
     @PostMapping
-    public Personal criar(@RequestBody Personal personal){
-        return personalService.salvar(personal);
+    public ResponseEntity<Personal> criar(@RequestBody Personal personal){
+        Personal aux = personalService.salvar(personal);
+
+        // URI
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(aux.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(aux);
     }
 
-    @PutMapping
-    public Personal atualizar(@RequestBody Personal personal){
-        return personalService.atualizar(personal);
+    @PutMapping("/{id}")
+    public ResponseEntity<Personal> atualizar(@PathVariable Long id, @RequestBody Personal personal){
+        return ResponseEntity.ok(personalService.atualizar(id, personal));
     }
 
     @DeleteMapping("/{id}")
-    public String deletar(@PathVariable Long id){
-        return personalService.deletar(id);
+    public ResponseEntity<Void> deletar(@PathVariable Long id){
+        return ResponseEntity.noContent().build();
     }
 
 }

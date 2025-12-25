@@ -2,6 +2,7 @@ package com.smartshape.service;
 
 import com.smartshape.model.Personal;
 import com.smartshape.repository.PersonalRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,24 +28,19 @@ public class PersonalService {
         return personalRepository.save(personal);
     }
 
-    public Personal atualizar(Personal personal){
-        Personal aux = listarPorId(personal.getId());
-        if (aux != null){
-            aux.setNome(personal.getNome());
-            aux.setCref(personal.getCref());
-            aux.setEmail(personal.getEmail());
-            aux.setSenha(personal.getSenha());
-            return personalRepository.save(aux);
-        }
-        return null;
+    public Personal atualizar(Long id, Personal personal){
+        Personal aux = personalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Personal com id: " + id + " não encontrado!!!"));
+
+        BeanUtils.copyProperties(personal, aux, "id");
+
+        return personalRepository.save(aux);
     }
 
-    public String deletar(Long id){
-        Personal aux = listarPorId(id);
-        if (aux != null){
-            personalRepository.deleteById(id);
-            return "Deletado com sucesso!!!";
+    public void deletar(Long id){
+        if(!personalRepository.existsById(id)){
+            throw new RuntimeException("Personal não encontrado ou já deletado!!!");
         }
-        return "Deletado ou não encontrado!!";
+        personalRepository.deleteById(id);
     }
 }
