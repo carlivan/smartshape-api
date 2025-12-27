@@ -1,5 +1,6 @@
 package com.smartshape.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -19,6 +20,7 @@ public class Cliente {
     //optional = true permite que o cliente sejacadastrado sem um personal
     @ManyToOne
     @JoinColumn(name = "personal_id")
+    @JsonIgnoreProperties({"senha", "cliente"})
     private Personal personal;
 
     private boolean usaTreinoPersonal = false;

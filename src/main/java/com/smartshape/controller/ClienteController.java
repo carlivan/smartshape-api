@@ -1,8 +1,9 @@
 package com.smartshape.controller;
 
 import com.smartshape.model.Cliente;
+import com.smartshape.model.Treino;
 import com.smartshape.service.ClienteService;
-import org.apache.coyote.Response;
+import com.smartshape.service.TreinoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -13,10 +14,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/clientes")
 public class ClienteController {
-    private ClienteService clienteService;
+    private final ClienteService clienteService;
+    private final TreinoService treinoService;
 
-    public ClienteController(ClienteService clienteService) {
+    public ClienteController(ClienteService clienteService, TreinoService treinoService) {
         this.clienteService = clienteService;
+        this.treinoService = treinoService;
     }
 
     @GetMapping
@@ -50,5 +53,11 @@ public class ClienteController {
     public ResponseEntity<Void> deletar(@PathVariable Long id){
         clienteService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/treinos")
+    public ResponseEntity<List<Treino>> listarTreinosDoAluno(@PathVariable Long id){
+        List<Treino> treinos = treinoService.buscarTreinosDoAluno(id);
+        return ResponseEntity.ok(treinos);
     }
 }

@@ -12,16 +12,12 @@ import java.util.List;
 @Service
 public class ClienteService {
 
-    private ClienteRepository clienteRepository;
-    private PersonalRepository personalRepository;
+    private final ClienteRepository clienteRepository;
+    private final PersonalRepository personalRepository;
 
     public ClienteService(ClienteRepository clienteRepository, PersonalRepository personalRepository) {
         this.clienteRepository = clienteRepository;
         this.personalRepository = personalRepository;
-    }
-
-    public ClienteService(ClienteRepository clienteRepository) {
-        this.clienteRepository = clienteRepository;
     }
 
     public Cliente listarUm(Long id){
@@ -61,6 +57,24 @@ public class ClienteService {
                 .orElseThrow(() -> new RuntimeException("Cliente inexistente ou já deletado!!!"));
 
         clienteRepository.deleteById(id);
+    }
+
+    public Cliente buscarAlunoDoPersonal(Long personalId, Long clienteId){
+        Cliente cliente = listarUm(clienteId);
+
+        if (cliente.getPersonal() == null || !cliente.getPersonal().getId().equals(personalId)){
+            throw new RuntimeException("Acesso negado: Aluno não pertence ao personal.");
+        }
+
+        return cliente;
+    }
+
+    public Cliente atualizarAlunoDoPersonal(Long personalId, Long clienteId, Cliente cliente){
+        Cliente aux = buscarAlunoDoPersonal(personalId, clienteId);
+
+        BeanUtils.copyProperties(cliente, aux, "id", "personal", "senha");
+
+        return clienteRepository.save(aux);
     }
 
 }

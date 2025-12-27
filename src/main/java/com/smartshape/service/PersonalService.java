@@ -1,9 +1,9 @@
 package com.smartshape.service;
 
 import com.smartshape.model.Personal;
+import com.smartshape.repository.ClienteRepository;
 import com.smartshape.repository.PersonalRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,8 +12,13 @@ import java.util.Optional;
 @Service
 public class PersonalService {
 
-    @Autowired
-    private PersonalRepository personalRepository;
+    private final PersonalRepository personalRepository;
+    private final ClienteRepository clienteRepository;
+
+    public PersonalService(PersonalRepository personalRepository, ClienteRepository clienteRepository) {
+        this.personalRepository = personalRepository;
+        this.clienteRepository = clienteRepository;
+    }
 
     public List<Personal> listarTodos(){
         return personalRepository.findAll();
@@ -42,5 +47,13 @@ public class PersonalService {
             throw new RuntimeException("Personal não encontrado ou já deletado!!!");
         }
         personalRepository.deleteById(id);
+    }
+
+    public long qtdClientes(Long personalId){
+        if (!personalRepository.existsById(personalId)){
+            throw new RuntimeException("Personal não encontrado ou inexistente!");
+        }
+
+        return clienteRepository.countByPersonalId(personalId);
     }
 }
